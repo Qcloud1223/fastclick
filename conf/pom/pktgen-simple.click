@@ -35,6 +35,8 @@ elementclass Generator { $magic |
       -> NoNumberise($magic)
     // `limit`: limit to preloaded packets
     // `timing`: the percentage to respect the original capture timestamp
+    // upd: TIMING=10 will run 10% the speed of TIMING=100
+    // TODO: find out the reason
       -> replay :: ReplayUnqueue(STOP 0, STOP_TIME 0, QUICK_CLONE $quick, VERBOSE false, ACTIVE true, LIMIT 500000, TIMING 100)
 
       -> avgSIN :: AverageCounter(IGNORE $ignore)
@@ -88,7 +90,7 @@ DriverManager(
     set sent $(avgSIN.add count),
     print "RESULT-TESTTIME $(sub $stoptime $starttime)",
     print "RESULT-SENT $sent",
-    print "RESULT-TX $(avgSIN.add link_rate)",
-    print "RESULT-TXPPS $(avgSIN.add rate)",
+    print "RESULT-TXBPS" $(div $(avgSIN.add link_rate) 1000000000)"G",
+    print "RESULT-TXPPS" $(div $(avgSIN.add rate) 1000000)"M",
     stop
 );
